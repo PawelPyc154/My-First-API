@@ -5,7 +5,7 @@ const app = express();
 
 //Connect Database
 connectDB();
-
+// "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
 //Init Middleware
 app.use(
   express.json({
