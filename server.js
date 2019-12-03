@@ -19,10 +19,10 @@ app.use(
 // Define Routes
 
 app.use((req, res, next) => {
-  res.header("Access-Controll-Allow-Orgin", "*");
+  res.header("Access-Control-Allow-Origin", "*");
   res.header(
-    "Access-Controll-Allow-Headers",
-    "Origin, X-Requested-With,Content-Type,Accept,Authorization"
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "PUT, PUSH, PATCH, DELETE, GET");
