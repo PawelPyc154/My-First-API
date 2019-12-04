@@ -30,7 +30,7 @@ app.use((req, res, next) => {
   }
   next();
 });
-
+//ee
 app.use("/api/users", require("./routes/users"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/contacts", require("./routes/contacts"));
