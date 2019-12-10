@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const Comment = require("../models/Comment");
+const User = require("../models/User");
 
 router.get("/", async (req, res) => {
   try {
@@ -14,12 +15,13 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", auth, async (req, res) => {
-  const {comment, author} = req.body;
+  const {comment} = req.body;
 
   try {
+    let user = await User.findById(req.user.id);
     const newComment = new Comment({
       comment,
-      author,
+      author: user.name,
       like: [],
       user: req.user.id
     });
@@ -63,10 +65,8 @@ router.put("/:id", auth, async (req, res) => {
 
 router.put("/like/:id", auth, async (req, res) => {
   // Build contact object
-
   try {
     let comment = await Comment.findById(req.params.id);
-
     if (comment.like.includes(req.user.id)) {
       return res.status(404).json({msg: "Only one like"});
     }
@@ -85,13 +85,34 @@ router.put("/like/:id", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
-router.delete("/:id", auth, async (req, res) => {
-  console.log(req.params.id);
-
+router.put("/removeLike/:id", auth, async (req, res) => {
+  // Build contact object
   try {
     let comment = await Comment.findById(req.params.id);
-    console.log(comment);
+    if (!comment.like.includes(req.user.id)) {
+      return res.status(404).json({msg: "You dont like this comment"});
+    }
+    let allLike = comment.like;
+    const removedLike = allLike.splice(req.user.id, 1);
+    const commentFields = {like: allLike};
+
+    if (!comment) return res.status(404).json({msg: "Contact not found"});
+
+    comment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      {$set: commentFields},
+      {new: true}
+    );
+    res.json(comment);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    let comment = await Comment.findById(req.params.id);
 
     if (!comment) return res.status(404).json({msg: "Contact not found"});
     if (comment.user.toString() !== req.user.id) {

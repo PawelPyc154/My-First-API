@@ -10,11 +10,15 @@ const CommentSchema = mongoose.Schema({
     required: true
   },
   author: {
-    type: String,
-    required: true
+    type: String
+    // required: true
   },
   like: {
     type: [String]
+  },
+  date: {
+    type: Date,
+    default: Date.now
   }
 });
 
