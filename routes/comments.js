@@ -93,7 +93,6 @@ router.put("/removeLike/:id", auth, async (req, res) => {
     let comment = await Comment.findById(req.params.id);
     // console.log(comment.like.includes(req.user.id));
     if (!comment.like.includes(req.user.id)) {
-      console.log("You dont like this comment");
       return res.status(404).json({msg: "You dont like this comment"});
     }
     let allLike = [...comment.like];
