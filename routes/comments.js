@@ -67,21 +67,20 @@ router.put("/like/:id", auth, async (req, res) => {
   // Build contact object
   try {
     let comment = await Comment.findById(req.params.id);
+
     if (comment.like.includes(req.user.id)) {
       return res.status(404).json({msg: "Only one like"});
     }
     const commentFields = {like: [...comment.like, req.user.id]};
 
-    if (!comment) {
-      return res.status(404).json({msg: "Contact not found"});
-    } else {
-      comment = await Comment.findByIdAndUpdate(
-        req.params.id,
-        {$set: commentFields},
-        {new: true}
-      );
-      res.json(comment);
-    }
+    if (!comment) return res.status(404).json({msg: "Contact not found"});
+
+    comment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      {$set: commentFields},
+      {new: true}
+    );
+    res.json(comment);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -89,25 +88,26 @@ router.put("/like/:id", auth, async (req, res) => {
 });
 router.put("/removeLike/:id", auth, async (req, res) => {
   // Build contact object
+
   try {
     let comment = await Comment.findById(req.params.id);
+    // console.log(comment.like.includes(req.user.id));
     if (!comment.like.includes(req.user.id)) {
+      console.log("You dont like this comment");
       return res.status(404).json({msg: "You dont like this comment"});
     }
-    let allLike = comment.like;
-    const removedLike = allLike.splice(req.user.id, 1);
-    const commentFields = {like: allLike};
+    let allLike = [...comment.like];
+    const removedLike = allLike.filter(like => like !== req.user.id);
+    const commentFields = {like: removedLike};
 
-    if (!comment) {
-      return res.status(404).json({msg: "Contact not found"});
-    } else {
-      comment = await Comment.findByIdAndUpdate(
-        req.params.id,
-        {$set: commentFields},
-        {new: true}
-      );
-      res.json(comment);
-    }
+    if (!comment) return res.status(404).json({msg: "Contact not found"});
+
+    comment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      {$set: commentFields},
+      {new: true}
+    );
+    res.json(comment);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
