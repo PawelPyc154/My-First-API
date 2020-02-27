@@ -72,14 +72,16 @@ router.put("/like/:id", auth, async (req, res) => {
     }
     const commentFields = {like: [...comment.like, req.user.id]};
 
-    if (!comment) return res.status(404).json({msg: "Contact not found"});
-
-    comment = await Comment.findByIdAndUpdate(
-      req.params.id,
-      {$set: commentFields},
-      {new: true}
-    );
-    res.json(comment);
+    if (!comment) {
+      return res.status(404).json({msg: "Contact not found"});
+    } else {
+      comment = await Comment.findByIdAndUpdate(
+        req.params.id,
+        {$set: commentFields},
+        {new: true}
+      );
+      res.json(comment);
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -96,14 +98,16 @@ router.put("/removeLike/:id", auth, async (req, res) => {
     const removedLike = allLike.splice(req.user.id, 1);
     const commentFields = {like: allLike};
 
-    if (!comment) return res.status(404).json({msg: "Contact not found"});
-
-    comment = await Comment.findByIdAndUpdate(
-      req.params.id,
-      {$set: commentFields},
-      {new: true}
-    );
-    res.json(comment);
+    if (!comment) {
+      return res.status(404).json({msg: "Contact not found"});
+    } else {
+      comment = await Comment.findByIdAndUpdate(
+        req.params.id,
+        {$set: commentFields},
+        {new: true}
+      );
+      res.json(comment);
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
